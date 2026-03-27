@@ -115,6 +115,11 @@ export default function CatalogPage() {
             </span>
           </Link>
           <div className="flex items-center gap-3">
+            {isAdmin && (
+              <Link to="/admin">
+                <Button variant="ghost" size="sm" className="gap-1"><Settings className="h-4 w-4" /> Admin</Button>
+              </Link>
+            )}
             <Link to="/profile">
               <Button variant="ghost" size="sm">Mi perfil</Button>
             </Link>
