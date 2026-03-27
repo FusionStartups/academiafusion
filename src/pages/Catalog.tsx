@@ -179,9 +179,20 @@ export default function CatalogPage() {
                   className="group block border border-border rounded-xl bg-card overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all"
                 >
                   {/* Cover */}
-                  <div className="h-40 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center">
-                    <BookOpen className="h-12 w-12 text-primary/40 group-hover:text-primary/60 transition-colors" />
-                  </div>
+                  {course.cover_image ? (
+                    <div className="h-40 overflow-hidden">
+                      <img
+                        src={course.cover_image}
+                        alt={course.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-40 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center">
+                      <BookOpen className="h-12 w-12 text-primary/40 group-hover:text-primary/60 transition-colors" />
+                    </div>
+                  )}
                   
                   <div className="p-5">
                     <div className="flex items-center gap-2 mb-2">
