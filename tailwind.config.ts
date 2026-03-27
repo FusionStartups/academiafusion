@@ -12,6 +12,11 @@ export default {
         "2xl": "1400px",
       },
     },
+    fontFamily: {
+      sans: ["'Syne'", "sans-serif"],
+      display: ["'Syne'", "sans-serif"],
+      mono: ["'Space Mono'", "monospace"],
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
