@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { ChevronRight, ChevronDown, Check, ArrowLeft, ArrowRight, Menu, X, GraduationCap } from "lucide-react";
+import { Check, ArrowLeft, ArrowRight, Menu, GraduationCap, Trophy, Linkedin, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
