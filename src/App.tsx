@@ -8,6 +8,7 @@ import AuthPage from "./pages/Auth";
 import CatalogPage from "./pages/Catalog";
 import CoursePlayerPage from "./pages/CoursePlayer";
 import ProfilePage from "./pages/Profile";
+import AdminPage from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/" element={<ProtectedRoute><CatalogPage /></ProtectedRoute>} />
             <Route path="/course/:slug" element={<ProtectedRoute><CoursePlayerPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

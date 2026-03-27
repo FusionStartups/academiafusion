@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 import { Link } from "react-router-dom";
-import { BookOpen, Clock, Filter, Search, ArrowRight, GraduationCap } from "lucide-react";
+import { BookOpen, Clock, Filter, Search, ArrowRight, GraduationCap, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ interface CourseProgress {
 
 export default function CatalogPage() {
   const { user, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const [courses, setCourses] = useState<Course[]>([]);
   const [progress, setProgress] = useState<Record<string, CourseProgress>>({});
   const [search, setSearch] = useState("");
@@ -113,6 +115,11 @@ export default function CatalogPage() {
             </span>
           </Link>
           <div className="flex items-center gap-3">
+            {isAdmin && (
+              <Link to="/admin">
+                <Button variant="ghost" size="sm" className="gap-1"><Settings className="h-4 w-4" /> Admin</Button>
+              </Link>
+            )}
             <Link to="/profile">
               <Button variant="ghost" size="sm">Mi perfil</Button>
             </Link>
