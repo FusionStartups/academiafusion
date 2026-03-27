@@ -27,6 +27,7 @@ interface CourseProgress {
 
 export default function CatalogPage() {
   const { user, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const [courses, setCourses] = useState<Course[]>([]);
   const [progress, setProgress] = useState<Record<string, CourseProgress>>({});
   const [search, setSearch] = useState("");
