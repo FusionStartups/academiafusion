@@ -32,6 +32,8 @@ export default function CoursePlayerPage() {
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
   const [openModules, setOpenModules] = useState<Set<string>>(new Set());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showCompletion, setShowCompletion] = useState(false);
+  const [certificateCode, setCertificateCode] = useState<string | null>(null);
 
   // Load course data
   useEffect(() => {
