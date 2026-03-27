@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 import { Link } from "react-router-dom";
-import { BookOpen, Clock, Filter, Search, ArrowRight, GraduationCap } from "lucide-react";
+import { BookOpen, Clock, Filter, Search, ArrowRight, GraduationCap, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
