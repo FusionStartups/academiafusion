@@ -325,26 +325,68 @@ export default function CoursePlayerPage() {
 
         {/* Content */}
         <div id="content-scroll" className="flex-1 overflow-y-auto custom-scrollbar">
-          <div className="max-w-[760px] mx-auto px-6 py-8 pb-16">
-            {activeLesson && activeModule && (
-              <>
-                <div className="mb-8 pb-5 border-b border-border">
-                  <p className="font-mono text-[0.65rem] text-muted-foreground uppercase tracking-wider mb-1">
-                    Módulo {String(activeModule.sort_order).padStart(2, "0")} ·{" "}
-                    <strong className="text-primary">{activeModule.title}</strong>
-                  </p>
-                  <h1 className="text-2xl md:text-3xl font-bold leading-tight">
-                    {activeLesson.title}
-                  </h1>
-                </div>
+          {showCompletion ? (
+            <div className="flex flex-col items-center justify-center min-h-full px-6 py-16 text-center">
+              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                <Trophy className="h-10 w-10 text-primary" />
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-3">
+                🎉 ¡Felicidades!
+              </h1>
+              <p className="text-lg text-muted-foreground mb-2 max-w-md">
+                Has completado con éxito el curso
+              </p>
+              <p className="text-xl font-bold text-primary mb-8">
+                {course?.title}
+              </p>
+              {certificateCode && (
+                <p className="text-sm text-muted-foreground mb-6 font-mono">
+                  Certificado: {certificateCode}
+                </p>
+              )}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a href={getLinkedInUrl()} target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" className="gap-2">
+                    <Linkedin className="h-5 w-5" />
+                    Añadir a perfil de LinkedIn
+                  </Button>
+                </a>
+                <Link to="/perfil">
+                  <Button variant="outline" size="lg" className="gap-2">
+                    <GraduationCap className="h-5 w-5" />
+                    Ver mis diplomas
+                  </Button>
+                </Link>
+                <Link to="/">
+                  <Button variant="ghost" size="lg" className="gap-2">
+                    <ArrowLeft className="h-5 w-5" />
+                    Volver al catálogo
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="max-w-[760px] mx-auto px-6 py-8 pb-16">
+              {activeLesson && activeModule && (
+                <>
+                  <div className="mb-8 pb-5 border-b border-border">
+                    <p className="font-mono text-[0.65rem] text-muted-foreground uppercase tracking-wider mb-1">
+                      Módulo {String(activeModule.sort_order).padStart(2, "0")} ·{" "}
+                      <strong className="text-primary">{activeModule.title}</strong>
+                    </p>
+                    <h1 className="text-2xl md:text-3xl font-bold leading-tight">
+                      {activeLesson.title}
+                    </h1>
+                  </div>
 
-                <div
-                  className="lesson-content"
-                  dangerouslySetInnerHTML={{ __html: activeLesson.content || "" }}
-                />
-              </>
-            )}
-          </div>
+                  <div
+                    className="lesson-content"
+                    dangerouslySetInnerHTML={{ __html: activeLesson.content || "" }}
+                  />
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Bottom navigation */}
