@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { ChevronRight, ChevronDown, Check, ArrowLeft, ArrowRight, Menu, X, GraduationCap } from "lucide-react";
+import { Check, ArrowLeft, ArrowRight, Menu, GraduationCap, Trophy, Linkedin, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -32,6 +32,8 @@ export default function CoursePlayerPage() {
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
   const [openModules, setOpenModules] = useState<Set<string>>(new Set());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showCompletion, setShowCompletion] = useState(false);
+  const [certificateCode, setCertificateCode] = useState<string | null>(null);
 
   // Load course data
   useEffect(() => {
@@ -136,27 +138,54 @@ export default function CoursePlayerPage() {
         next.delete(activeLesson.id);
         return next;
       });
+      setShowCompletion(false);
     } else {
       await supabase.from("user_lesson_progress").insert({
         user_id: user.id,
         lesson_id: activeLesson.id,
       });
-      setCompletedLessons((prev) => new Set(prev).add(activeLesson.id));
-      toast.success("¡Lección completada!");
+      const newCompleted = new Set(completedLessons);
+      newCompleted.add(activeLesson.id);
+      setCompletedLessons(newCompleted);
 
-      // Check if course is complete
-      const newCompleted = completedCount + 1;
-      if (newCompleted >= totalLessons && course) {
+      const newCompletedCount = allLessons.filter((l) => newCompleted.has(l.id)).length;
+      const isLastLesson = activeIndex === allLessons.length - 1;
+      const isCourseComplete = newCompletedCount >= totalLessons;
+
+      if (isCourseComplete && course) {
         // Issue certificate
-        const { error } = await supabase.from("certificates").insert({
-          user_id: user.id,
-          course_id: course.id,
-        });
-        if (!error) {
-          toast.success("🎓 ¡Has completado el curso! Revisa tu diploma en tu perfil.");
+        const { data: certData, error } = await supabase
+          .from("certificates")
+          .insert({ user_id: user.id, course_id: course.id })
+          .select("certificate_code")
+          .single();
+        if (!error && certData) {
+          setCertificateCode(certData.certificate_code);
         }
+        setShowCompletion(true);
+      } else if (!isLastLesson) {
+        // Auto-advance to next lesson
+        toast.success("¡Lección completada!");
+        setTimeout(() => goToLesson(allLessons[activeIndex + 1].id), 600);
+      } else {
+        toast.success("¡Lección completada!");
       }
     }
+  };
+
+  const getLinkedInUrl = () => {
+    if (!course) return "#";
+    const now = new Date();
+    const params = new URLSearchParams({
+      startTask: "CERTIFICATION_NAME",
+      name: course.title,
+      organizationName: "Academia Fusión",
+      issueYear: String(now.getFullYear()),
+      issueMonth: String(now.getMonth() + 1),
+      certUrl: window.location.origin + "/curso/" + slug,
+      certId: certificateCode || "",
+    });
+    return `https://www.linkedin.com/profile/add?${params.toString()}`;
   };
 
   const isModuleComplete = (mod: Module) =>
@@ -296,26 +325,68 @@ export default function CoursePlayerPage() {
 
         {/* Content */}
         <div id="content-scroll" className="flex-1 overflow-y-auto custom-scrollbar">
-          <div className="max-w-[760px] mx-auto px-6 py-8 pb-16">
-            {activeLesson && activeModule && (
-              <>
-                <div className="mb-8 pb-5 border-b border-border">
-                  <p className="font-mono text-[0.65rem] text-muted-foreground uppercase tracking-wider mb-1">
-                    Módulo {String(activeModule.sort_order).padStart(2, "0")} ·{" "}
-                    <strong className="text-primary">{activeModule.title}</strong>
-                  </p>
-                  <h1 className="text-2xl md:text-3xl font-bold leading-tight">
-                    {activeLesson.title}
-                  </h1>
-                </div>
+          {showCompletion ? (
+            <div className="flex flex-col items-center justify-center min-h-full px-6 py-16 text-center">
+              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                <Trophy className="h-10 w-10 text-primary" />
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-3">
+                🎉 ¡Felicidades!
+              </h1>
+              <p className="text-lg text-muted-foreground mb-2 max-w-md">
+                Has completado con éxito el curso
+              </p>
+              <p className="text-xl font-bold text-primary mb-8">
+                {course?.title}
+              </p>
+              {certificateCode && (
+                <p className="text-sm text-muted-foreground mb-6 font-mono">
+                  Certificado: {certificateCode}
+                </p>
+              )}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a href={getLinkedInUrl()} target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" className="gap-2">
+                    <Linkedin className="h-5 w-5" />
+                    Añadir a perfil de LinkedIn
+                  </Button>
+                </a>
+                <Link to="/perfil">
+                  <Button variant="outline" size="lg" className="gap-2">
+                    <GraduationCap className="h-5 w-5" />
+                    Ver mis diplomas
+                  </Button>
+                </Link>
+                <Link to="/">
+                  <Button variant="ghost" size="lg" className="gap-2">
+                    <ArrowLeft className="h-5 w-5" />
+                    Volver al catálogo
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="max-w-[760px] mx-auto px-6 py-8 pb-16">
+              {activeLesson && activeModule && (
+                <>
+                  <div className="mb-8 pb-5 border-b border-border">
+                    <p className="font-mono text-[0.65rem] text-muted-foreground uppercase tracking-wider mb-1">
+                      Módulo {String(activeModule.sort_order).padStart(2, "0")} ·{" "}
+                      <strong className="text-primary">{activeModule.title}</strong>
+                    </p>
+                    <h1 className="text-2xl md:text-3xl font-bold leading-tight">
+                      {activeLesson.title}
+                    </h1>
+                  </div>
 
-                <div
-                  className="lesson-content"
-                  dangerouslySetInnerHTML={{ __html: activeLesson.content || "" }}
-                />
-              </>
-            )}
-          </div>
+                  <div
+                    className="lesson-content"
+                    dangerouslySetInnerHTML={{ __html: activeLesson.content || "" }}
+                  />
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Bottom navigation */}
