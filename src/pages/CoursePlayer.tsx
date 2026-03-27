@@ -138,27 +138,54 @@ export default function CoursePlayerPage() {
         next.delete(activeLesson.id);
         return next;
       });
+      setShowCompletion(false);
     } else {
       await supabase.from("user_lesson_progress").insert({
         user_id: user.id,
         lesson_id: activeLesson.id,
       });
-      setCompletedLessons((prev) => new Set(prev).add(activeLesson.id));
-      toast.success("¡Lección completada!");
+      const newCompleted = new Set(completedLessons);
+      newCompleted.add(activeLesson.id);
+      setCompletedLessons(newCompleted);
 
-      // Check if course is complete
-      const newCompleted = completedCount + 1;
-      if (newCompleted >= totalLessons && course) {
+      const newCompletedCount = allLessons.filter((l) => newCompleted.has(l.id)).length;
+      const isLastLesson = activeIndex === allLessons.length - 1;
+      const isCourseComplete = newCompletedCount >= totalLessons;
+
+      if (isCourseComplete && course) {
         // Issue certificate
-        const { error } = await supabase.from("certificates").insert({
-          user_id: user.id,
-          course_id: course.id,
-        });
-        if (!error) {
-          toast.success("🎓 ¡Has completado el curso! Revisa tu diploma en tu perfil.");
+        const { data: certData, error } = await supabase
+          .from("certificates")
+          .insert({ user_id: user.id, course_id: course.id })
+          .select("certificate_code")
+          .single();
+        if (!error && certData) {
+          setCertificateCode(certData.certificate_code);
         }
+        setShowCompletion(true);
+      } else if (!isLastLesson) {
+        // Auto-advance to next lesson
+        toast.success("¡Lección completada!");
+        setTimeout(() => goToLesson(allLessons[activeIndex + 1].id), 600);
+      } else {
+        toast.success("¡Lección completada!");
       }
     }
+  };
+
+  const getLinkedInUrl = () => {
+    if (!course) return "#";
+    const now = new Date();
+    const params = new URLSearchParams({
+      startTask: "CERTIFICATION_NAME",
+      name: course.title,
+      organizationName: "Academia Fusión",
+      issueYear: String(now.getFullYear()),
+      issueMonth: String(now.getMonth() + 1),
+      certUrl: window.location.origin + "/curso/" + slug,
+      certId: certificateCode || "",
+    });
+    return `https://www.linkedin.com/profile/add?${params.toString()}`;
   };
 
   const isModuleComplete = (mod: Module) =>
