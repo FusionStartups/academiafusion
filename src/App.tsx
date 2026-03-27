@@ -8,6 +8,7 @@ import AuthPage from "./pages/Auth";
 import CatalogPage from "./pages/Catalog";
 import CoursePlayerPage from "./pages/CoursePlayer";
 import ProfilePage from "./pages/Profile";
+import AdminPage from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
