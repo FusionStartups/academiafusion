@@ -183,6 +183,19 @@
   @apply text-base text-muted-foreground/50 shrink-0;
 }
 
+/* Code block copy button */
+.lesson-content pre,
+.lesson-content .code-block {
+  @apply relative;
+}
+.code-copy-btn {
+  @apply absolute top-2 right-2 z-10 flex items-center justify-center w-8 h-8 rounded-md border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer;
+  font-size: 14px;
+}
+.code-copy-btn.copied {
+  @apply text-primary border-primary;
+}
+
 /* Scrollbar */
 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
 .custom-scrollbar::-webkit-scrollbar-thumb { @apply bg-border rounded-sm; }

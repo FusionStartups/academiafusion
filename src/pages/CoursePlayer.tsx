@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -34,6 +34,32 @@ export default function CoursePlayerPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showCompletion, setShowCompletion] = useState(false);
   const [certificateCode, setCertificateCode] = useState<string | null>(null);
+  const lessonContentRef = useRef<HTMLDivElement>(null);
+
+  // Inject copy buttons on code blocks
+  useEffect(() => {
+    const container = lessonContentRef.current;
+    if (!container) return;
+    const codeBlocks = container.querySelectorAll("pre, .code-block");
+    codeBlocks.forEach((block) => {
+      if (block.querySelector(".code-copy-btn")) return;
+      const el = block as HTMLElement;
+      el.style.position = "relative";
+      const btn = document.createElement("button");
+      btn.className = "code-copy-btn";
+      btn.title = "Copiar";
+      btn.innerHTML = "📋";
+      btn.addEventListener("click", () => {
+        const text = (block as HTMLElement).innerText.replace(/📋|✓/g, "").trim();
+        navigator.clipboard.writeText(text).then(() => {
+          btn.innerHTML = "✓";
+          btn.classList.add("copied");
+          setTimeout(() => { btn.innerHTML = "📋"; btn.classList.remove("copied"); }, 2000);
+        });
+      });
+      block.appendChild(btn);
+    });
+  }, [activeLessonId]);
 
   // Load course data
   useEffect(() => {
@@ -390,6 +416,7 @@ export default function CoursePlayerPage() {
                   </div>
 
                   <div
+                    ref={lessonContentRef}
                     className="lesson-content"
                     dangerouslySetInnerHTML={{ __html: activeLesson.content || "" }}
                   />
