@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -390,6 +390,7 @@ export default function CoursePlayerPage() {
                   </div>
 
                   <div
+                    ref={lessonContentRef}
                     className="lesson-content"
                     dangerouslySetInnerHTML={{ __html: activeLesson.content || "" }}
                   />
