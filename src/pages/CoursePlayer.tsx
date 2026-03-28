@@ -118,6 +118,7 @@ export default function CoursePlayerPage() {
 
   const goToLesson = (id: string) => {
     setActiveLessonId(id);
+    if (course) localStorage.setItem(`course-lesson-${course.id}`, id);
     setSidebarOpen(false);
     document.getElementById("content-scroll")?.scrollTo({ top: 0, behavior: "smooth" });
     // Open parent module
