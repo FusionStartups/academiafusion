@@ -187,12 +187,15 @@
 .lesson-content pre,
 .lesson-content .code-block {
   @apply relative;
+  overflow: visible !important;
 }
 .code-copy-btn {
-  @apply absolute -top-3 right-3 z-10 flex items-center justify-center w-6 h-6 rounded border border-border bg-card text-muted-foreground/60 hover:text-foreground hover:border-foreground/30 transition-all cursor-pointer;
+  @apply absolute z-10 flex items-center justify-center w-6 h-6 rounded border border-border bg-card text-muted-foreground/60 hover:text-foreground hover:border-foreground/30 transition-all cursor-pointer;
+  top: -12px;
+  right: 12px;
   font-size: 11px;
   line-height: 1;
-  backdrop-filter: blur(4px);
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.08);
 }
 .code-copy-btn.copied {
   @apply text-primary border-primary/40;
