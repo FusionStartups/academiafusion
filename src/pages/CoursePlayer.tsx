@@ -69,13 +69,10 @@ export default function CoursePlayerPage() {
 
       setModules(mods);
 
-      // Set first lesson as active
-      if (mods.length > 0 && mods[0].lessons.length > 0) {
-        setActiveLessonId(mods[0].lessons[0].id);
-        setOpenModules(new Set([mods[0].id]));
-      }
+      // Load progress first, then set active lesson
+      const allLessonsFlat = mods.flatMap((m) => m.lessons);
+      let completedSet = new Set<string>();
 
-      // Load progress
       if (user) {
         const { data: progressData } = await supabase
           .from("user_lesson_progress")
@@ -83,8 +80,18 @@ export default function CoursePlayerPage() {
           .eq("user_id", user.id);
 
         if (progressData) {
-          setCompletedLessons(new Set(progressData.map((p) => p.lesson_id)));
+          completedSet = new Set(progressData.map((p) => p.lesson_id));
+          setCompletedLessons(completedSet);
         }
+      }
+
+      // Set active lesson: first uncompleted, or last if all done
+      if (allLessonsFlat.length > 0) {
+        const firstUncompleted = allLessonsFlat.find((l) => !completedSet.has(l.id));
+        const targetLesson = firstUncompleted || allLessonsFlat[allLessonsFlat.length - 1];
+        setActiveLessonId(targetLesson.id);
+        const targetModule = mods.find((m) => m.id === targetLesson.module_id);
+        setOpenModules(new Set(targetModule ? [targetModule.id] : [mods[0].id]));
       }
     }
     load();
