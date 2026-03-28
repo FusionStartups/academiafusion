@@ -85,10 +85,12 @@ export default function CoursePlayerPage() {
         }
       }
 
-      // Set active lesson: first uncompleted, or last if all done
+      // Set active lesson: restore last viewed, or first uncompleted, or last
       if (allLessonsFlat.length > 0) {
+        const savedLessonId = localStorage.getItem(`course-lesson-${courseData.id}`);
+        const savedLesson = savedLessonId ? allLessonsFlat.find((l) => l.id === savedLessonId) : null;
         const firstUncompleted = allLessonsFlat.find((l) => !completedSet.has(l.id));
-        const targetLesson = firstUncompleted || allLessonsFlat[allLessonsFlat.length - 1];
+        const targetLesson = savedLesson || firstUncompleted || allLessonsFlat[allLessonsFlat.length - 1];
         setActiveLessonId(targetLesson.id);
         const targetModule = mods.find((m) => m.id === targetLesson.module_id);
         setOpenModules(new Set(targetModule ? [targetModule.id] : [mods[0].id]));
